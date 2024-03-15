@@ -1,4 +1,4 @@
-const { getDatabase } = require('../../../utils/database');
+const { getDatabase } = require('../../../../utils/database');
 const axios = require('axios');
 require('dotenv').config();
 

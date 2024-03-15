@@ -8,12 +8,14 @@ const fs = require('fs-extra')
 const PORT = process.env.PORT || 3000;
 const cron = require('node-cron');
 
+const { getDatabase } = require('./src/utils/database');
 const { connectToDatabase } = require('./src/utils/database');
-const userRoutes = require('./src/app/modules/users/user.route');
-const authRoutes = require('./src/app/modules/middleware/jwtAuth.route');
-const otpRoutes = require('./src/app/modules/otpVerification/otp.route');
-const uploadRoutes = require('./src/app/modules/multerUpload/multer.controller');
+const authRoutes = require('./src/app/v1/modules/middleware/jwtAuth.route');
+const otpRoutes = require('./src/app/v1/modules/otpVerification/otp.route');
+const uploadRoutes = require('./src/app/v1/modules/multerUpload/multer.controller');
 
+
+const userRoutes = require('./src/app/v1/modules/users/user.route');
 
 app.use(express.json());
 app.use(cors());
@@ -25,32 +27,34 @@ app.use('/public', express.static('public'));
 connectToDatabase()
     .then(() => {
         // Use userRoutes after connecting to the database
-        app.use(userRoutes);
         app.use(authRoutes);
         app.use(otpRoutes);
 
-        //----------Update the bill status Due for all users start----------//
+        app.use(userRoutes);
 
-        cron.schedule('0 0 3 * *', async () => {
-            try {
-                const db = getDatabase();
-                const updateBillStatus = {
-                    $set: {
-                        billStatus: 'Due'
-                    }
-                };
+  //----------Update the bill status Due for all users start----------//
 
-                const result = await db.collection('users').updateMany({}, updateBillStatus);
-
-                console.log(`Bill status updated for ${result.modifiedCount} users on the 4th of the month.`);
-
-
-            } catch (error) {
-                console.error('Error updating bill status:', error);
+  cron.schedule('0 0 3 * *', async () => {
+      try {
+        const db = getDatabase();
+        const updateBillStatus = {
+            $set: {
+                billStatus: 'Due'
             }
-        });
+        };
+        
+        const result = await db.collection('customers').updateMany({}, updateBillStatus);
 
-        //----------Update the bill status Due for all users End----------//
+        console.log(`Bill status updated for ${result.modifiedCount} users on the 4th of the month.`);
+
+
+    } catch (error) {
+        console.error('Error updating bill status:', error);
+    }
+});
+
+//----------Update the bill status Due for all users End----------//
+
 
 
         // ---------------Image Upload APIS Start-----------//
@@ -81,9 +85,8 @@ connectToDatabase()
         });
         // ---------------Image Upload APIS End-----------//
 
-
         app.get('/', (req, res) => {
-            res.status(201).send({ serverRunning: true, ip: ip.address(), message: 'Server is Running', DevelopingStart: "14-03-2024" })
+            res.status(201).send({ serverRunning: true, ip: ip.address(), message: 'Surokkha GPS Server is Running', DevelopingStart: "20-10-2023" })
 
         })
 

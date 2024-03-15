@@ -1,4 +1,4 @@
-const { getDatabase } = require('../../../utils/database');
+const { getDatabase } = require('../../../../utils/database');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 

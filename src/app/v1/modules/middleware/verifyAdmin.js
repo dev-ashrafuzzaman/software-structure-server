@@ -1,4 +1,4 @@
-const { getDatabase } = require('../../../utils/database');
+const { getDatabase } = require('../../../../utils/database');
 
 
 const verifyAdmin = async (req, res, next) => {

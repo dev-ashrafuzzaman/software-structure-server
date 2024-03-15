@@ -17,7 +17,7 @@ async function connectToDatabase() {
   try {
     await client.connect();
     console.log("Connected to DB");
-    db = client.db("dactarlink"); 
+    db = client.db("software"); 
   } catch (error) {
     console.error("Error connecting to DB:", error);
     throw error;
