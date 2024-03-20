@@ -45,7 +45,7 @@ exports.getUsers = async (req, res) => {
       .skip((page - 1) * pageSize)
       .limit(parseInt(pageSize))
       .toArray();
-      
+
     res.json({ totalCount, data: result  });
   } catch (err) {
     console.error(err);
@@ -136,7 +136,7 @@ exports.updateStatus = async (req, res) => {
   console.log(statusData);
   const db = getDatabase();
   try {
-    const result = await db.collection('users').updateOne(filter, { $set: statusData });
+    const result = await db.collection('customers').updateOne(filter, { $set: statusData });
     res.send(result)
   } catch (err) {
     console.error(err);
@@ -149,7 +149,7 @@ exports.deleteUser = async (req, res) => {
   const db = getDatabase();
   const query = { _id: new ObjectId(id) };
   try {
-    const result = await db.collection('users').deleteOne(query);
+    const result = await db.collection('customers').deleteOne(query);
     res.send(result);
   } catch (err) {
     console.error(err);
