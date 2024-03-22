@@ -13,17 +13,6 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// exports.getUsers = async (req, res) => {
-//   try {
-//     const db = getDatabase();
-//     const result = await db.collection('customers').find().toArray();
-//     res.send(result);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// };
-
 exports.getUsers = async (req, res) => {
   try {
     const { page = 1, pageSize = 10, search = '' } = req.query;
@@ -39,8 +28,8 @@ exports.getUsers = async (req, res) => {
       ];
     }
 
-    const totalCount = await db.collection('customers').countDocuments(query);
-    const result = await db.collection('customers')
+    const totalCount = await db.collection('users').countDocuments(query);
+    const result = await db.collection('users')
       .find(query)
       .skip((page - 1) * pageSize)
       .limit(parseInt(pageSize))
@@ -53,33 +42,6 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-exports.getaccounts = async (req, res) => {
-  try {
-    const db = getDatabase();
-    const result = await db.collection('accounts').find().toArray();
-    res.send(result);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-
-exports.setUsersDueStatus = async (req, res) => {
-  try {
-    const db = getDatabase();
-    const updateBillStatus = {
-      $set: {
-        billStatus: 'Due'
-      }
-    };
-    const result = await db.collection('users').updateMany({}, updateBillStatus);
-    res.send(result);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal Server Error No Update' });
-  }
-};
 
 exports.getUser = async (req, res) => {
   try {
@@ -101,28 +63,9 @@ exports.updateUser = async (req, res) => {
   const { user } = req.body;
   const db = getDatabase();
   try {
-    const findUser = await db.collection('users').findOne(filter);
-
-    const previusUser = { userName: findUser.userName }
-    const updateUserName = { userName: user.userName }
-
-    if (findUser) {
-      const connectCheck = await db.collection('connections').find(previusUser).toArray();
-      if (connectCheck) {
-        await db.collection('connections').updateMany(previusUser, { $set: updateUserName });
-      }
-
-      const billsCheck = await db.collection('bills').find(previusUser).toArray();
-      if (billsCheck) {
-        await db.collection('bills').updateMany(previusUser, { $set: updateUserName });
-      }
-      const result = await db.collection('users').updateOne(filter, { $set: user });
-      res.send(result)
-
-    } else {
-      res.send('user Not Found')
-    }
-
+    const result = await db.collection('users').updateOne(filter, { $set: user });
+    res.send(result)
+    
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error no update' });
@@ -156,3 +99,76 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+exports.getaccounts = async (req, res) => {
+  try {
+    const db = getDatabase();
+    const result = await db.collection('accounts').find().toArray();
+    res.send(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+exports.setUsersDueStatus = async (req, res) => {
+  try {
+    const db = getDatabase();
+    const updateBillStatus = {
+      $set: {
+        billStatus: 'Due'
+      }
+    };
+    const result = await db.collection('users').updateMany({}, updateBillStatus);
+    res.send(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error No Update' });
+  }
+};
+
+
+// exports.updateUser = async (req, res) => {
+//   const id = req.params.id;
+//   const filter = { _id: new ObjectId(id) }
+//   const { user } = req.body;
+//   const db = getDatabase();
+//   try {
+//     const findUser = await db.collection('users').findOne(filter);
+
+//     const previusUser = { userName: findUser.userName }
+//     const updateUserName = { userName: user.userName }
+
+//     if (findUser) {
+//       const connectCheck = await db.collection('connections').find(previusUser).toArray();
+//       if (connectCheck) {
+//         await db.collection('connections').updateMany(previusUser, { $set: updateUserName });
+//       }
+
+//       const billsCheck = await db.collection('bills').find(previusUser).toArray();
+//       if (billsCheck) {
+//         await db.collection('bills').updateMany(previusUser, { $set: updateUserName });
+//       }
+//       const result = await db.collection('users').updateOne(filter, { $set: user });
+//       res.send(result)
+
+//     } else {
+//       res.send('user Not Found')
+//     }
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: 'Internal Server Error no update' });
+//   }
+// };
